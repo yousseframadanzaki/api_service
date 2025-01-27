@@ -200,6 +200,14 @@ func (app *Application) query(c echo.Context) error {
 	return c.JSON(http.StatusOK, results)
 }
 
+func (app *Application) warmup(c echo.Context) error {
+	app.jobQueue <- func() error {
+		http.Get(os.Getenv("EmbeddingServiceURL"))
+		return nil
+	}
+	return c.String(http.StatusOK, "Warmup done")
+}
+
 func (app *Application) processImage(imgData []byte, filename string, metadata Metadata, log echo.Logger) error {
 	embedding, err := app.getEmbedding(imgData, filename)
 	if err != nil {
@@ -364,6 +372,7 @@ func main() {
 	e.Use(middleware.Recover())
 	e.POST("/index", app.index)
 	e.POST("/query", app.query)
+	e.GET("/warmup", app.warmup)
 	port := ":" + os.Getenv("PORT")
 	if err := e.Start(port); err != nil {
 		fmt.Printf("Server error: %v\n", err)
