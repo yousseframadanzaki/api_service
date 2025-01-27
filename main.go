@@ -364,8 +364,8 @@ func main() {
 	e.Use(middleware.Recover())
 	e.POST("/index", app.index)
 	e.POST("/query", app.query)
-
-	if err := e.Start(":1323"); err != nil {
+	port := ":" + os.Getenv("PORT")
+	if err := e.Start(port); err != nil {
 		fmt.Printf("Server error: %v\n", err)
 		os.Exit(1)
 	}
