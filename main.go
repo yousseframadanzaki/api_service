@@ -202,11 +202,16 @@ func (app *Application) query(c echo.Context) error {
 
 func (app *Application) warmup(c echo.Context) error {
 	app.jobQueue <- func() error {
-		req, err := http.NewRequest("POST", os.Getenv("EmbeddingServiceURL"), body)
+		req, err := http.NewRequest("POST", os.Getenv("EmbeddingServiceURL"), nil)
 		if err != nil {
 			return err
 		}
-		req.Header.Set("Authorization", "Bearer q2IGKVhTDjZyqCFynBkd0SAumFpS8WRQYQSONs1Xkx2cne-5GteppjkccwOrKwYfl5oXZr_T2YVQq60dY8TKAg==")
+		req.Header.Set("Authorization", "Bearer "+os.Getenv("EmbeddingServiceToken"))
+		_, err = app.httpClient.Do(req)
+
+		if err != nil {
+			return err
+		}
 		return nil
 	}
 	return c.String(http.StatusOK, "Warmup done")
@@ -257,7 +262,7 @@ func (app *Application) getEmbedding(imgData []byte, filename string) ([]float32
 		return nil, err
 	}
 	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.Header.Set("Authorization", "Bearer q2IGKVhTDjZyqCFynBkd0SAumFpS8WRQYQSONs1Xkx2cne-5GteppjkccwOrKwYfl5oXZr_T2YVQq60dY8TKAg==")
+	req.Header.Set("Authorization", "Bearer "+os.Getenv("EmbeddingServiceToken"))
 
 	resp, err := app.httpClient.Do(req)
 
