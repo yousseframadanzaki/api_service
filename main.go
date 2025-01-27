@@ -257,7 +257,7 @@ func (app *Application) getEmbedding(imgData []byte, filename string) ([]float32
 	}
 	writer.Close()
 
-	req, err := http.NewRequest("POST", os.Getenv("EmbeddingServiceURL"), body)
+	req, err := http.NewRequest("POST", os.Getenv("EmbeddingServiceURL")+"/embed", body)
 	if err != nil {
 		return nil, err
 	}
