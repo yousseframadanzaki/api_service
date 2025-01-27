@@ -202,7 +202,11 @@ func (app *Application) query(c echo.Context) error {
 
 func (app *Application) warmup(c echo.Context) error {
 	app.jobQueue <- func() error {
-		http.Get(os.Getenv("EmbeddingServiceURL") + "/warmup")
+		req, err := http.NewRequest("POST", os.Getenv("EmbeddingServiceURL"), body)
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Authorization", "Bearer q2IGKVhTDjZyqCFynBkd0SAumFpS8WRQYQSONs1Xkx2cne-5GteppjkccwOrKwYfl5oXZr_T2YVQq60dY8TKAg==")
 		return nil
 	}
 	return c.String(http.StatusOK, "Warmup done")
