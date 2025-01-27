@@ -202,7 +202,7 @@ func (app *Application) query(c echo.Context) error {
 
 func (app *Application) warmup(c echo.Context) error {
 	app.jobQueue <- func() error {
-		http.Get(os.Getenv("EmbeddingServiceURL"))
+		http.Get(os.Getenv("EmbeddingServiceURL") + "/warmup")
 		return nil
 	}
 	return c.String(http.StatusOK, "Warmup done")
